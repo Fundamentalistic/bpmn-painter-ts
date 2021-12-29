@@ -5,7 +5,7 @@ import {
     BPMNProcess,
     BPMNShape, Definitions,
     DiagramDefinition,
-    EndEvent, GroupWrapper,
+    EndEvent,
     StartEvent,
 } from './types';
 

@@ -2,9 +2,9 @@ import testXML from '../testXML';
 // @ts-ignore
 import BpmnViewer from 'bpmn-js/lib/NavigatedViewer';
 import {
-    GroupWrapper,
+    BPMNShape, Connection, ConnectionPath,
+    ElementID,
     GroupWrapperShape,
-
 } from './types'
 import {webcrypto} from "crypto";
 
@@ -35,28 +35,32 @@ export class BpmnPainter {
         });
     }
 
-    createShape(
-        shapeId: string,
-        x : number,
-        y : number,
-        bpmnElement?: string,
-        width : number = 100,
-        height : number = 100,
+    // One has to establish a connection between the elements after source element has been defined (?)
+    establishConnection(connectionParameters: Connection) {
+            return `<bpmn:sequenceFlow id="${connectionParameters.id}" sourceRef="${connectionParameters.sourceRef}" targetRef="${connectionParameters.targetRef}" />`
+    }
 
-    ){
-        if(!bpmnElement){
-            bpmnElement = Math.random().toString(36).substring(2);
-        }
-        return `<bpmndi:BPMNShape id="${shapeId}" bpmnElement="${bpmnElement}">
-                <dc:Bounds x="${x}" y="${y}" width="${width}" height="${height}" />
-            </bpmndi:BPMNShape>`;
+    specifyConnectionPath(connectionPath: ConnectionPath) {
+        const arrayOfPoints = connectionPath.wayPointsArray.map((point) => {
+            return `<di:waypoint x="${point.x}" y="${point.y}" />`
+        })
+        return `<bpmndi:BPMNEdge id="${connectionPath.id}" bpmnElement="${connectionPath.bpmnElement}">
+                    ${arrayOfPoints.join('')}
+                </bpmndi:BPMNEdge>`
+    }
+
+    drawRegularShape(shapeParameters: BPMNShape) {
+        return `<bpmndi:BPMNShape id="${shapeParameters.id}" bpmnElement="${shapeParameters.bpmnElement}">
+                    <dc:Bounds x="${shapeParameters.bounds.x}" y="${shapeParameters.bounds.y}" width="${shapeParameters.bounds.width}" height="${shapeParameters.bounds.height}" />
+      </bpmndi:BPMNShape>`
+
     }
     // No idea how to implement this method
     drawLabel() {
 
     }
 
-    drawGroup(diagramElement: GroupWrapper) {
+    drawGroup(diagramElement: ElementID) {
         return `<bpmn:group id="${diagramElement.id}"/>`
     }
 
@@ -89,14 +93,25 @@ export class BpmnPainter {
         let GroupShapeWidth: number = maxX - minX + 2 * xOffset;
         let GroupShapeHeight: number = maxY - minY + 2 * yOffset;
 
-        return `<bpmndi:BPMNShape id="${wrapperParameters.id}" bpmnElement="${wrapperParameters.bpmnElement}">
-                    <dc:Bounds x="${GroupShapeX}" y="${GroupShapeY}" width="${GroupShapeWidth}" height="${GroupShapeHeight}" />
-                </bpmndi:BPMNShape>`
+        return this.drawRegularShape({
+            id: wrapperParameters.id,
+            type: 'group',
+            bpmnElement: wrapperParameters.bpmnElement,
+            bounds: {
+                x: GroupShapeX,
+                y: GroupShapeY,
+                width: GroupShapeWidth,
+                height: GroupShapeHeight,
+            }
+        });
+    }
+    // to draw a conditional element shape, use drawRegularShape
+    drawConditionElement(diagramElement: ElementID) {
+        return `<bpmn:gateway id="${diagramElement.id}">
+                </bpmn:gateway>`
     }
 
-    drawConditionElement() {
 
-    }
 
     execute(){
         this.bpmnViewer.importXML(this.testXML);

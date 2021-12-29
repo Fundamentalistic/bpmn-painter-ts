@@ -80,9 +80,27 @@ export type GroupWrapperShape = {
     elements: Array<BPMNShape>
 }
 /**
- * @type GroupWrapper
+ * @type ElementID
  * @property id a unique diagram element id
  */
-export type GroupWrapper = {
+export type ElementID = {
     id: string
+}
+
+/**
+ * @type Connection
+ * @property id a unique connection identifier, is used to define the connection path
+ * @property sourceRef is an element id that is the connection origin
+ * @property targetRef is  an element id that is the connection end
+ */
+export type Connection = {
+    id: string,
+    sourceRef: string,
+    targetRef: string,
+}
+
+export type ConnectionPath = {
+    id: string,
+    bpmnElement: string,
+    wayPointsArray: Array<Waypoint>,
 }
