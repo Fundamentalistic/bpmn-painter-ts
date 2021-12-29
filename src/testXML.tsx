@@ -299,6 +299,8 @@ const testXml = `<?xml version="1.0" encoding="UTF-8"?>
         <di:waypoint x="390" y="930" />
         <di:waypoint x="390" y="1010" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNLabel bpmnElement="Flow_To_Call_ID_3_Checks">
+      </bpmndi:BPMNLabel>
       <bpmndi:BPMNEdge id="Flow_02532md_di" bpmnElement="Flow_To_Call_ID_1_Checks">
         <di:waypoint x="645" y="930" />
         <di:waypoint x="280" y="930" />

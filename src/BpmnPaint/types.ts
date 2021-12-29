@@ -104,3 +104,13 @@ export type ConnectionPath = {
     bpmnElement: string,
     wayPointsArray: Array<Waypoint>,
 }
+
+/**
+ * @type OrdinaryTask
+ * @property id  a unique task identifier
+ * @property name a string to display within ordinary task element
+ */
+export type OrdinaryTask = {
+    id: string,
+    name: string,
+}

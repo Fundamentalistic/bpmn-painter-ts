@@ -5,7 +5,7 @@ import {
     EndEvent,
     BPMNShape, Connection, ConnectionPath,
     ElementID,
-    GroupWrapperShape,
+    GroupWrapperShape, OrdinaryTask,
 
 } from './types'
 import {webcrypto} from "crypto";
@@ -118,10 +118,13 @@ export class BpmnPainter {
     }
     // to draw a conditional element shape, use drawRegularShape
     drawConditionElement(diagramElement: ElementID) {
-        return `<bpmn:gateway id="${diagramElement.id}">
-                </bpmn:gateway>`
+        return `<bpmn:gateway id="${diagramElement.id}" />`
     }
 
+    // to draw an ordinary task shape, use drawRegularShape
+    drawOrdinaryTask(taskParams: OrdinaryTask) {
+        return `<bpmn:task id="${taskParams.id}" name="${taskParams.name}" />`
+    }
 
 
     async drawEndEvent(ee : any){
