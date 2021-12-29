@@ -5,11 +5,11 @@ import {
     EndEvent,
     BPMNShape, Connection, ConnectionPath,
     ElementID,
-    GroupWrapperShape,
+    GroupWrapperShape, BPMNDiagram, Definitions, BPMNProcess,
 
 } from './types'
 import {webcrypto} from "crypto";
-import {endEvent} from "./definitions";
+import {endEvent, endXMLDefinition, provideDefinitions, startXMLDefinitions, xmlHeader} from "./definitions";
 
 /**
  * The Global Doctrine is: NO SHAPES WITHIN PROCESS SECTION!!!
@@ -28,8 +28,9 @@ export class BpmnPainter {
     bpmnViewer: BpmnViewer;
     mainProcessXML: string;
     mainDefinitionsXML: string;
-    mainProcess: string[];
+    mainProcess: BPMNProcess | undefined;
     mainDefinitions: string[];
+    bpmnDiagram: BPMNDiagram | undefined;
     // coordinateSystem = {
     //     stepX: 1400 / 12,
     //     stepY: 120
@@ -42,7 +43,8 @@ export class BpmnPainter {
         });
         this.mainProcessXML = '';
         this.mainDefinitionsXML = '';
-        this.mainProcess = [];
+        this.mainProcess = undefined;
+        this.bpmnDiagram = undefined;
         this.mainDefinitions = [];
     }
 
@@ -136,6 +138,21 @@ export class BpmnPainter {
 
         const endEventXML = endEvent(endEventObject);
 
+    }
+
+    async buildCompleteXML(){
+        const definitions: Definitions = {
+            id: Math.random().toString(36).substring(2),
+            process: <BPMNProcess>this.mainProcess,
+            diagram: <BPMNDiagram>this.bpmnDiagram,
+        }
+        const completeDiagram = String.prototype.concat(
+            xmlHeader,
+            provideDefinitions(definitions),
+            endXMLDefinition
+        );
+
+        return completeDiagram;
     }
 
     execute(){
