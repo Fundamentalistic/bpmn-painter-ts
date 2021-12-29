@@ -6,6 +6,7 @@ import {
     GroupWrapperShape,
 
 } from './types'
+import {webcrypto} from "crypto";
 
 /**
  * The Global Doctrine is: NO SHAPES WITHIN PROCESS SECTION!!!
@@ -22,10 +23,10 @@ export class BpmnPainter {
 
     testXML: string; // Just for development
     bpmnViewer: BpmnViewer
-    coordinateSystem = {
-        stepX: 1400 / 12,
-        stepY: 120
-    }
+    // coordinateSystem = {
+    //     stepX: 1400 / 12,
+    //     stepY: 120
+    // }
     constructor(props: BpmnPainterProps) {
         this.testXML = testXML(); // Must be deleted on production
         console.log(props.containerId);
@@ -57,15 +58,40 @@ export class BpmnPainter {
 
     drawGroup(diagramElement: GroupWrapper) {
         return `<bpmn:group id="${diagramElement.id}"/>`
-
     }
 
     drawGroupShape(wrapperParameters: GroupWrapperShape) {
-        let minI:number, minJ:number, maxI:number, maxJ:number;
-        wrapperParameters.elements.map((shape)=>{
-            if (!minI) {
+        const xOffset :number = 100;
+        const yOffset :number = 100;
+        let minX :number = wrapperParameters.elements[0].bounds.x;
+        let maxX :number = wrapperParameters.elements[0].bounds.x;
+        let minY :number = wrapperParameters.elements[0].bounds.y;
+        let maxY :number = wrapperParameters.elements[0].bounds.y;
+
+        wrapperParameters.elements.forEach((shape)=>{
+            if (minX > shape.bounds.x) {
+                minX = shape.bounds.x;
+            }
+            if (minY > shape.bounds.y) {
+                minY = shape.bounds.y;
+            }
+
+            if (maxX < shape.bounds.x) {
+                maxX = shape.bounds.x;
+            }
+            if (maxY < shape.bounds.y) {
+                maxY = shape.bounds.y;
             }
         });
+
+        let GroupShapeX: number = minX - xOffset;
+        let GroupShapeY: number = minY - yOffset;
+        let GroupShapeWidth: number = maxX - minX + 2 * xOffset;
+        let GroupShapeHeight: number = maxY - minY + 2 * yOffset;
+
+        return `<bpmndi:BPMNShape id="${wrapperParameters.id}" bpmnElement="${wrapperParameters.bpmnElement}">
+                    <dc:Bounds x="${GroupShapeX}" y="${GroupShapeY}" width="${GroupShapeWidth}" height="${GroupShapeHeight}" />
+                </bpmndi:BPMNShape>`
     }
 
     drawConditionElement() {

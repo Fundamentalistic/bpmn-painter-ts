@@ -1,8 +1,8 @@
 export type Bounds = {
     x: number,
     y: number,
-    width: number | undefined,
-    height: number | undefined,
+    width: number,
+    height: number,
 };
 
 export type BPMNShape = {
