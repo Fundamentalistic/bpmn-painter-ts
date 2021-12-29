@@ -5,7 +5,7 @@ import {
     BPMNProcess,
     BPMNShape, Definitions,
     DiagramDefinition,
-    EndEvent,
+    EndEvent, GroupWrapper,
     StartEvent,
 } from './types';
 
@@ -103,9 +103,6 @@ export function bpmnProcess(process: BPMNProcess) {
             if (element.type === 'endEvent') {
                 return endEvent(<EndEvent>element);
             }
-            if (element.type === 'bpmnShape') {
-                return bpmnShape(<BPMNShape>element);
-            }
         });
 
         return `<bpmn:process id="${process.id}" isExecutable="${process.executable} camunda:versionTag="${process.versionTag}">
@@ -119,6 +116,9 @@ export function provideDefinitions(definitions: Definitions) {
                 ${bpmnDiagram(definitions.diagram)}
             </bpmn:definitions>`
 }
+
+
+
 
 
 
