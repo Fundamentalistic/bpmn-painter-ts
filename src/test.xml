@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_166kp7m" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1">
+    <bpmn:process id="Dich3RuleProcess" isExecutable="true">
+        <bpmn:startEvent id="DICH3_StartEvent">
+            <bpmn:outgoing>Flow_To_Has_Experian_Factors_Report_Dich3</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:endEvent id="DICH3_EndEvent">
+            <bpmn:incoming>DefaultFlow_After_Has_Experian_Factors_Report_Dich3</bpmn:incoming>
+            <bpmn:incoming>Flow_To_DICH3_EndEvent</bpmn:incoming>
+            <bpmn:incoming>DefaultFlow_After_HasExperian_CrossBrandFactorsReport</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_To_Has_Experian_Factors_Report_Dich3" sourceRef="DICH3_StartEvent" targetRef="Task_Has_Experian_Factors_Report_Dich3" />
+        <bpmn:serviceTask id="Task_Has_Experian_Factors_Report_Dich3" name="Has experian factors report" camunda:modelerTemplate="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener" camunda:class="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener">
+            <bpmn:extensionElements>
+                <camunda:properties>
+                    <camunda:property name="rule_group" value="HasExperianFactorsReport" />
+                </camunda:properties>
+                <camunda:inputOutput>
+                    <camunda:outputParameter name="HasDICH3CurrentDQBrand">${false}</camunda:outputParameter>
+                </camunda:inputOutput>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_To_Has_Experian_Factors_Report_Dich3</bpmn:incoming>
+            <bpmn:outgoing>Flow_To_Gateaway_After_Has_Experian_Factors_Report_Dich3</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:exclusiveGateway id="Gateway_After_Has_Experian_Factors_Report_Dich3" default="DefaultFlow_After_Has_Experian_Factors_Report_Dich3">
+            <bpmn:incoming>Flow_To_Gateaway_After_Has_Experian_Factors_Report_Dich3</bpmn:incoming>
+            <bpmn:outgoing>Flow_To_HasExperian_CrossBrandFactorsReport</bpmn:outgoing>
+            <bpmn:outgoing>DefaultFlow_After_Has_Experian_Factors_Report_Dich3</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:sequenceFlow id="Flow_To_Gateaway_After_Has_Experian_Factors_Report_Dich3" sourceRef="Task_Has_Experian_Factors_Report_Dich3" targetRef="Gateway_After_Has_Experian_Factors_Report_Dich3" />
+        <bpmn:serviceTask id="Task_Number_Of_CurrentDPD_Across_Brand" name="Number of current DPD across brand" camunda:modelerTemplate="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener" camunda:class="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener">
+            <bpmn:extensionElements>
+                <camunda:properties>
+                    <camunda:property name="rule_group" value="NumberOfCurrentDPDAcrossBrand" />
+                </camunda:properties>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_To_Number_Of_CurrentDPD_Across_Brand</bpmn:incoming>
+            <bpmn:outgoing>Flow_To_Has_DICH3_Current_DQ_Brand</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Flow_To_HasExperian_CrossBrandFactorsReport" sourceRef="Gateway_After_Has_Experian_Factors_Report_Dich3" targetRef="Task_HasExperian_CrossBrandFactorsReport">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{HasExperianFactorsReport == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="DefaultFlow_After_Has_Experian_Factors_Report_Dich3" sourceRef="Gateway_After_Has_Experian_Factors_Report_Dich3" targetRef="DICH3_EndEvent" />
+        <bpmn:serviceTask id="Task_Has_DICH3_Current_DQ_Brand" name="Has DICH3 current DQ brand" camunda:modelerTemplate="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener" camunda:class="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener">
+            <bpmn:extensionElements>
+                <camunda:properties>
+                    <camunda:property name="rule_group" value="HasDICH3CurrentDQBrand" />
+                </camunda:properties>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_To_Has_DICH3_Current_DQ_Brand</bpmn:incoming>
+            <bpmn:outgoing>Flow_To_DICH3_EndEvent</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Flow_To_Has_DICH3_Current_DQ_Brand" sourceRef="Task_Number_Of_CurrentDPD_Across_Brand" targetRef="Task_Has_DICH3_Current_DQ_Brand" />
+        <bpmn:sequenceFlow id="Flow_To_DICH3_EndEvent" sourceRef="Task_Has_DICH3_Current_DQ_Brand" targetRef="DICH3_EndEvent" />
+        <bpmn:serviceTask id="Task_HasExperian_CrossBrandFactorsReport" name="Has experian cross brand factor report" camunda:modelerTemplate="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener" camunda:class="ru.smsfinance.engine.decision.bpm.ProcessExecutionListener">
+            <bpmn:extensionElements>
+                <camunda:properties>
+                    <camunda:property name="rule_group" value="HasExperianCrossBrandFactorReport" />
+                </camunda:properties>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_To_HasExperian_CrossBrandFactorsReport</bpmn:incoming>
+            <bpmn:outgoing>Flow_To_Gateaway_After_HasExperian_CrossBrandFactorsReport</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:exclusiveGateway id="Gateway_After_HasExperian_CrossBrandFactorsReport" default="DefaultFlow_After_HasExperian_CrossBrandFactorsReport">
+            <bpmn:incoming>Flow_To_Gateaway_After_HasExperian_CrossBrandFactorsReport</bpmn:incoming>
+            <bpmn:outgoing>Flow_To_Number_Of_CurrentDPD_Across_Brand</bpmn:outgoing>
+            <bpmn:outgoing>DefaultFlow_After_HasExperian_CrossBrandFactorsReport</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:sequenceFlow id="Flow_To_Gateaway_After_HasExperian_CrossBrandFactorsReport" sourceRef="Task_HasExperian_CrossBrandFactorsReport" targetRef="Gateway_After_HasExperian_CrossBrandFactorsReport" />
+        <bpmn:sequenceFlow id="Flow_To_Number_Of_CurrentDPD_Across_Brand" sourceRef="Gateway_After_HasExperian_CrossBrandFactorsReport" targetRef="Task_Number_Of_CurrentDPD_Across_Brand">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{HasExperianCrossBrandFactorReport == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="DefaultFlow_After_HasExperian_CrossBrandFactorsReport" sourceRef="Gateway_After_HasExperian_CrossBrandFactorsReport" targetRef="DICH3_EndEvent" />
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Dich3RuleProcess">
+            <bpmndi:BPMNEdge id="Flow_1cgj88l_di" bpmnElement="DefaultFlow_After_HasExperian_CrossBrandFactorsReport">
+                <di:waypoint x="650" y="191" />
+                <di:waypoint x="650" y="80" />
+                <di:waypoint x="1250" y="80" />
+                <di:waypoint x="1250" y="198" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_1upgb5h_di" bpmnElement="Flow_To_Number_Of_CurrentDPD_Across_Brand">
+                <di:waypoint x="675" y="216" />
+                <di:waypoint x="760" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_0tykw8z_di" bpmnElement="Flow_To_Gateaway_After_HasExperian_CrossBrandFactorsReport">
+                <di:waypoint x="570" y="216" />
+                <di:waypoint x="625" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_1dxq6er_di" bpmnElement="Flow_To_DICH3_EndEvent">
+                <di:waypoint x="1100" y="216" />
+                <di:waypoint x="1232" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_0bi6nmz_di" bpmnElement="Flow_To_Has_DICH3_Current_DQ_Brand">
+                <di:waypoint x="860" y="216" />
+                <di:waypoint x="1000" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_1w4e1ml_di" bpmnElement="DefaultFlow_After_Has_Experian_Factors_Report_Dich3">
+                <di:waypoint x="390" y="191" />
+                <di:waypoint x="390" y="80" />
+                <di:waypoint x="1250" y="80" />
+                <di:waypoint x="1250" y="198" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_0kpihto_di" bpmnElement="Flow_To_HasExperian_CrossBrandFactorsReport">
+                <di:waypoint x="415" y="216" />
+                <di:waypoint x="470" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_0a4aljt_di" bpmnElement="Flow_To_Gateaway_After_Has_Experian_Factors_Report_Dich3">
+                <di:waypoint x="330" y="216" />
+                <di:waypoint x="365" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_0lpon2f_di" bpmnElement="Flow_To_Has_Experian_Factors_Report_Dich3">
+                <di:waypoint x="188" y="216" />
+                <di:waypoint x="230" y="216" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="StartEvent_0mtgpm5_di" bpmnElement="DICH3_StartEvent">
+                <dc:Bounds x="152" y="198" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_17n1fvm_di" bpmnElement="DICH3_EndEvent">
+                <dc:Bounds x="1232" y="198" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_1h2fwl3_di" bpmnElement="Task_Has_Experian_Factors_Report_Dich3">
+                <dc:Bounds x="230" y="176" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Gateway_0lubtk3_di" bpmnElement="Gateway_After_Has_Experian_Factors_Report_Dich3" isMarkerVisible="true">
+                <dc:Bounds x="365" y="191" width="50" height="50" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_0a06jqo_di" bpmnElement="Task_Number_Of_CurrentDPD_Across_Brand">
+                <dc:Bounds x="760" y="176" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_0l3fuv1_di" bpmnElement="Task_Has_DICH3_Current_DQ_Brand">
+                <dc:Bounds x="1000" y="176" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_0f3cwp2_di" bpmnElement="Task_HasExperian_CrossBrandFactorsReport">
+                <dc:Bounds x="470" y="176" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Gateway_0k86nvp_di" bpmnElement="Gateway_After_HasExperian_CrossBrandFactorsReport" isMarkerVisible="true">
+                <dc:Bounds x="625" y="191" width="50" height="50" />
+            </bpmndi:BPMNShape>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>
