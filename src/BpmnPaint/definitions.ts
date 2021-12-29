@@ -78,21 +78,21 @@ export function bpmnDiagram(diagram: BPMNDiagram) {
 }
 
 export function startEvent (event: StartEvent) {
-    return `<bpmn2:startEvent id="${event.id}">
-                <bpmn2:outgoing>${event.outgoing}</bpmn2:outgoing>
-            </bpmn2:startEvent>`;
+    return `<bpmn:startEvent id="${event.id}">
+                <bpmn:outgoing>${event.outgoing}</bpmn:outgoing>
+            </bpmn:startEvent>`;
 }
 
 export function endEvent (event: EndEvent) {
     let endEventIncomingArray = event.incoming.map((incomingConnection) => {
-        return `<bpmn2:incoming>
+        return `<bpmn:incoming>
                     ${incomingConnection}
-                </bpmn2:incoming>`
+                </bpmn:incoming>`
     });
 
-    return `<bpmn2:endEvent id="${event.id}">
+    return `<bpmn:endEvent id="${event.id}">
                 ${endEventIncomingArray.join('')}
-            </bpmn2:endEvent>`
+            </bpmn:endEvent>`
 }
 
 export function bpmnProcess(process: BPMNProcess) {
@@ -108,9 +108,9 @@ export function bpmnProcess(process: BPMNProcess) {
             }
         });
 
-        return `<bpmn2:process id="${process.id}" isExecutable="${process.executable} camunda:versionTag="${process.versionTag}">
+        return `<bpmn:process id="${process.id}" isExecutable="${process.executable} camunda:versionTag="${process.versionTag}">
                     ${elementsArray.join('')}
-                </bpmn2:process>`
+                </bpmn:process>`
 }
 
 export function provideDefinitions(definitions: Definitions) {
