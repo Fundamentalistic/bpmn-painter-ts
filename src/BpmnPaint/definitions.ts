@@ -3,7 +3,7 @@ import {
     BPMNEdge,
     BPMNPlane,
     BPMNProcess,
-    BPMNShape,
+    BPMNShape, Definitions,
     DiagramDefinition,
     EndEvent,
     StartEvent,
@@ -108,9 +108,16 @@ export function bpmnProcess(process: BPMNProcess) {
             }
         });
 
-        return `<bpmn2:process id="${process.id}" isExe>
-                    
+        return `<bpmn2:process id="${process.id}" isExecutable="${process.executable} camunda:versionTag="${process.versionTag}">
+                    ${elementsArray.join('')}
                 </bpmn2:process>`
+}
+
+export function provideDefinitions(definitions: Definitions) {
+    return `<bpmn:definitions id="${definitions.id}">
+                ${bpmnProcess(definitions.process)}
+                ${bpmnDiagram(definitions.diagram)}
+            </bpmn:definitions>`
 }
 
 

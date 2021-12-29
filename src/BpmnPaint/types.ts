@@ -62,6 +62,7 @@ export type BPMNProcess = {
 }
 
 export type Definitions = {
+    id: string,
     process: BPMNProcess,
-    diagram: BPMNDiagram
+    diagram: BPMNDiagram,
 };
