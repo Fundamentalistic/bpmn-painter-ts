@@ -26,12 +26,14 @@ export type Waypoint = {
 
 export type StartEvent = {
     id: String,
-    outgoing: String
+    outgoing: String,
+    type: string,
 };
 
 export type EndEvent = {
     id: String,
-    incoming: String[]
+    incoming: String[],
+    type: string,
 };
 
 export type BPMNEdge = {

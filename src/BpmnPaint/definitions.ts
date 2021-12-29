@@ -1,7 +1,12 @@
 import {
+    BPMNDiagram,
     BPMNEdge,
     BPMNPlane,
-    BPMNShape
+    BPMNProcess,
+    BPMNShape,
+    DiagramDefinition,
+    EndEvent,
+    StartEvent,
 } from './types';
 
 export const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>`;
@@ -15,10 +20,20 @@ export function bpmnShape(shape : BPMNShape){
 }
 
 export function bpmnEdge(shape : BPMNEdge){
-    return `<bpmndi:BPMNEdge id="Flow_0bi6nmz_di" bpmnElement="Flow_To_Has_DICH3_Current_DQ_Brand">
-                <di:waypoint x="860" y="216" />
-                <di:waypoint x="1000" y="216" />
-            </bpmndi:BPMNEdge>`;
+    let wayPointsArray: string[] = shape.waypoints.map((point)=>{
+        return `<di:waypoint x="${point.x}" y="${point.y}" />`
+    })
+
+    let resultArray: string[] = Array.prototype.concat(
+        [`<bpmndi:BPMNEdge id="${shape.id}" bpmnElement="${shape.bpmnElement}">`],
+        wayPointsArray,
+        [`</bpmndi:BPMNEdge>`],
+    );
+    return resultArray.join('');
+    // return `<bpmndi:BPMNEdge id="Flow_0bi6nmz_di" bpmnElement="Flow_To_Has_DICH3_Current_DQ_Brand">
+    //             <di:waypoint x="860" y="216" />
+    //             <di:waypoint x="1000" y="216" />
+    //         </bpmndi:BPMNEdge>`;
 }
 
 export function bpmnPlane(bpmnPlane : BPMNPlane){
@@ -36,3 +51,67 @@ export function bpmnPlane(bpmnPlane : BPMNPlane){
     );
     return stringsArray.join('');
 }
+
+export function diagramDefinition(definition: DiagramDefinition) {
+    const elementsArray = definition.elements.map((bpmnElement) => {
+        if (bpmnElement.type === 'shape') {
+            return bpmnShape(<BPMNShape>bpmnElement);
+        }
+        if (bpmnElement.type === 'edge') {
+            return bpmnEdge(<BPMNEdge>bpmnElement);
+        }
+    });
+
+    let stringsArray : string[] = Array.prototype.concat(
+        [`<bpmndi:DiagramDefinition id="${definition.id}">`],
+        elementsArray,
+        [`</bpmndi:DiagramDefinition>`],
+    );
+
+    return stringsArray.join('');
+}
+
+export function bpmnDiagram(diagram: BPMNDiagram) {
+    return `<bpmndi:BPMNDiagram id="${diagram.id}">
+                ${bpmnPlane(diagram.plane)}
+            </bpmndi:BPMNDiagram>`;
+}
+
+export function startEvent (event: StartEvent) {
+    return `<bpmn2:startEvent id="${event.id}">
+                <bpmn2:outgoing>${event.outgoing}</bpmn2:outgoing>
+            </bpmn2:startEvent>`;
+}
+
+export function endEvent (event: EndEvent) {
+    let endEventIncomingArray = event.incoming.map((incomingConnection) => {
+        return `<bpmn2:incoming>
+                    ${incomingConnection}
+                </bpmn2:incoming>`
+    });
+
+    return `<bpmn2:endEvent id="${event.id}">
+                ${endEventIncomingArray.join('')}
+            </bpmn2:endEvent>`
+}
+
+export function bpmnProcess(process: BPMNProcess) {
+        let elementsArray = process.bpmnElements.map((element)=>{
+            if(element.type === 'startEvent') {
+                return startEvent(<StartEvent>element);
+            }
+            if (element.type === 'endEvent') {
+                return endEvent(<EndEvent>element);
+            }
+            if (element.type === 'bpmnShape') {
+                return bpmnShape(<BPMNShape>element);
+            }
+        });
+
+        return `<bpmn2:process id="${process.id}" isExe>
+                    
+                </bpmn2:process>`
+}
+
+
+
