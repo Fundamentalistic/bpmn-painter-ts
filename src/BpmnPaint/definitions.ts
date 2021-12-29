@@ -3,9 +3,12 @@ import {
     BPMNEdge,
     BPMNPlane,
     BPMNProcess,
-    BPMNShape, Definitions,
+    BPMNShape, Connection, ConnectionPath, Definitions,
     DiagramDefinition,
+    ElementID,
     EndEvent,
+    GroupWrapperShape,
+    OrdinaryTask,
     StartEvent,
 } from './types';
 
@@ -78,21 +81,11 @@ export function bpmnDiagram(diagram: BPMNDiagram) {
 }
 
 export function startEvent (event: StartEvent) {
-    return `<bpmn:startEvent id="${event.id}">
-                <bpmn:outgoing>${event.outgoing}</bpmn:outgoing>
-            </bpmn:startEvent>`;
+    return `<bpmn:startEvent id="${event.id}"/>`;
 }
 
 export function endEvent (event: EndEvent) {
-    let endEventIncomingArray = event.incoming.map((incomingConnection) => {
-        return `<bpmn:incoming>
-                    ${incomingConnection}
-                </bpmn:incoming>`
-    });
-
-    return `<bpmn:endEvent id="${event.id}">
-                ${endEventIncomingArray.join('')}
-            </bpmn:endEvent>`
+    return `<bpmn:endEvent id="${event.id}"/>`
 }
 
 export function bpmnProcess(process: BPMNProcess) {
@@ -115,6 +108,70 @@ export function provideDefinitions(definitions: Definitions) {
                 ${bpmnProcess(definitions.process)}
                 ${bpmnDiagram(definitions.diagram)}
             </bpmn:definitions>`
+}
+
+export function GroupShape(wrapperParameters: GroupWrapperShape) {
+    const xOffset :number = 100;
+    const yOffset :number = 100;
+    let minX :number = wrapperParameters.elements[0].bounds.x;
+    let maxX :number = wrapperParameters.elements[0].bounds.x;
+    let minY :number = wrapperParameters.elements[0].bounds.y;
+    let maxY :number = wrapperParameters.elements[0].bounds.y;
+
+    wrapperParameters.elements.forEach((shape)=>{
+        if (minX > shape.bounds.x) {
+            minX = shape.bounds.x;
+        }
+        if (minY > shape.bounds.y) {
+            minY = shape.bounds.y;
+        }
+
+        if (maxX < shape.bounds.x) {
+            maxX = shape.bounds.x;
+        }
+        if (maxY < shape.bounds.y) {
+            maxY = shape.bounds.y;
+        }
+    });
+
+    let GroupShapeX: number = minX - xOffset;
+    let GroupShapeY: number = minY - yOffset;
+    let GroupShapeWidth: number = maxX - minX + 2 * xOffset;
+    let GroupShapeHeight: number = maxY - minY + 2 * yOffset;
+
+    return bpmnShape({
+        id: wrapperParameters.id,
+        type: 'group',
+        bpmnElement: wrapperParameters.bpmnElement,
+        bounds: {
+            x: GroupShapeX,
+            y: GroupShapeY,
+            width: GroupShapeWidth,
+            height: GroupShapeHeight,
+        }
+    });
+}
+
+export function connect(connectionParameters: Connection) {
+    return `<bpmn:sequenceFlow id="${connectionParameters.id}" sourceRef="${connectionParameters.sourceRef}" targetRef="${connectionParameters.targetRef}" />`
+}
+
+export function ConnectionRoad(connectionPath: ConnectionPath) {
+    const arrayOfPoints = connectionPath.wayPointsArray.map((point) => {
+        return `<di:waypoint x="${point.x}" y="${point.y}" />`
+    })
+    return `<bpmndi:BPMNEdge id="${connectionPath.id}" bpmnElement="${connectionPath.bpmnElement}">
+                    ${arrayOfPoints.join('')}
+                </bpmndi:BPMNEdge>`
+}
+
+export function ConditionElement(diagramElement: ElementID) {
+    return `<bpmn:gateway id="${diagramElement.id}" />`
+}
+
+// to draw an ordinary task shape, use drawRegularShape
+export function Task(taskParams: OrdinaryTask) {
+    return `<bpmn:task id="${taskParams.id}" name="${taskParams.name}" />`
 }
 
 

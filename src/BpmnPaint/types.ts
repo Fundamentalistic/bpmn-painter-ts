@@ -26,14 +26,14 @@ export type Waypoint = {
 
 export type StartEvent = {
     id: string,
-    outgoing: string,
     type: string,
+    connectWith: string,
 };
 
 export type EndEvent = {
     id: string,
-    incoming: string[],
     type: string,
+    connectWith: string,
 };
 
 export type BPMNEdge = {
@@ -57,8 +57,7 @@ export type BPMNProcess = {
     id: string,
     executable: Boolean,
     versionTag: string,
-    // bpmnElements: Array<StartEvent | EndEvent | BPMNShape>
-    bpmnElements: Array<StartEvent | EndEvent> // NO SHAPE IN PROCESS!!!
+    bpmnElements: Array<StartEvent | EndEvent | OrdinaryTask | Connection> // NO SHAPE IN PROCESS!!!
 
 }
 
@@ -82,9 +81,11 @@ export type GroupWrapperShape = {
 /**
  * @type ElementID
  * @property id a unique diagram element id
+ * @property type defines which element type to draw
  */
 export type ElementID = {
-    id: string
+    id: string,
+    type: string,
 }
 
 /**
@@ -94,6 +95,7 @@ export type ElementID = {
  * @property targetRef is  an element id that is the connection end
  */
 export type Connection = {
+    type: string,
     id: string,
     sourceRef: string,
     targetRef: string,
@@ -111,6 +113,7 @@ export type ConnectionPath = {
  * @property name a string to display within ordinary task element
  */
 export type OrdinaryTask = {
+    type: string,
     id: string,
     name: string,
 }
