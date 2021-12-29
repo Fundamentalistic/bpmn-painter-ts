@@ -2,11 +2,14 @@ import testXML from '../testXML';
 // @ts-ignore
 import BpmnViewer from 'bpmn-js/lib/NavigatedViewer';
 import {
+    EndEvent,
     BPMNShape, Connection, ConnectionPath,
     ElementID,
     GroupWrapperShape,
+
 } from './types'
 import {webcrypto} from "crypto";
+import {endEvent} from "./definitions";
 
 /**
  * The Global Doctrine is: NO SHAPES WITHIN PROCESS SECTION!!!
@@ -22,7 +25,11 @@ export type BpmnPainterProps = {
 export class BpmnPainter {
 
     testXML: string; // Just for development
-    bpmnViewer: BpmnViewer
+    bpmnViewer: BpmnViewer;
+    mainProcessXML: string;
+    mainDefinitionsXML: string;
+    mainProcess: string[];
+    mainDefinitions: string[];
     // coordinateSystem = {
     //     stepX: 1400 / 12,
     //     stepY: 120
@@ -33,6 +40,10 @@ export class BpmnPainter {
         this.bpmnViewer = new BpmnViewer({
             container: props.containerId
         });
+        this.mainProcessXML = '';
+        this.mainDefinitionsXML = '';
+        this.mainProcess = [];
+        this.mainDefinitions = [];
     }
 
     // One has to establish a connection between the elements after source element has been defined (?)
@@ -112,6 +123,20 @@ export class BpmnPainter {
     }
 
 
+
+    async drawEndEvent(ee : any){
+
+        const endEventObject : EndEvent = {
+            id: 'EndEvent',
+            incoming: ee.fromElements.map((el : any) => {
+                return el.elementId
+            }),
+            type: 'EndEvent'
+        };
+
+        const endEventXML = endEvent(endEventObject);
+
+    }
 
     execute(){
         this.bpmnViewer.importXML(this.testXML);
