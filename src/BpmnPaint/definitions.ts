@@ -1,4 +1,8 @@
-import {BPMNEdge, BPMNPlane, BPMNShape} from "./types";
+import {
+    BPMNEdge,
+    BPMNPlane,
+    BPMNShape
+} from './types';
 
 export const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>`;
 export const startXMLDefinitions = `<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_166kp7m" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.1">`;

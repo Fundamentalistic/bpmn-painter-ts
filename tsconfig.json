@@ -22,6 +22,6 @@
   },
   "include": [
     "src",
-    "JsUntypedModulesDeclaration.d.ts"
+    // "JsUntypedModulesDeclaration.d.ts" uncomment this string to make import js untyped module properly
   ]
 }

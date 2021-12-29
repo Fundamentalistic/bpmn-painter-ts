@@ -1,4 +1,5 @@
 import testXML from "../testXML";
+// @ts-ignore
 import BpmnViewer from 'bpmn-js/lib/NavigatedViewer';
 
 
