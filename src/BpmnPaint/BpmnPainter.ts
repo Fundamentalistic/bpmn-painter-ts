@@ -1,39 +1,34 @@
 import testXML from '../testXML';
+import exportXml from '../xmlInvestigator';
 // @ts-ignore
 import BpmnViewer from 'bpmn-js/lib/NavigatedViewer';
-import {
-    EndEvent,
-    BPMNShape,
-    Connection,
-    ConnectionPath,
-    ElementID,
-    GroupWrapperShape,
-    BPMNDiagram,
-    Definitions,
-    BPMNProcess,
-    OrdinaryTask,
 
-} from './types'
-import {webcrypto} from "crypto";
 import {
-    endEvent,
-    endXMLDefinition,
-    provideDefinitions,
-    startXMLDefinitions,
+    webcrypto
+} from 'crypto';
+
+import {
     xmlHeader,
-    bpmnShape,
-    connect,
-    ConnectionRoad,
-    GroupShape,
-    Task,
-    ConditionElement,
-} from "./definitions";
+    startXMLDefinitions,
+    endXMLDefinitions,
+    mainProcessStart,
+    mainProcessEnd,
+    mainDiagramStart,
+    mainDiagramEnd,
+    mainPlainStart,
+    mainPlainEnd,
+    inputDataParser,
+    groupContainersOrchestrator,
+    standAloneConnectionsInstaller,
+} from './definitions';
 
-/**
- * The Global Doctrine is: NO SHAPES WITHIN PROCESS SECTION!!!
- * Process section defines a diagram elements list
- * Diagram section defines a diagram elements sizes, styles, etc.
- */
+import {
+    Element,
+    Point,
+    StandAloneConnection,
+} from './types';
+
+
 export type BpmnPainterProps = {
     containerId: string,
     modules: Array<Object> | undefined,
@@ -44,85 +39,48 @@ export class BpmnPainter {
 
     testXML: string; // Just for development
     bpmnViewer: BpmnViewer;
-    mainProcessXML: string;
-    mainDefinitionsXML: string;
-    mainProcess: BPMNProcess | undefined;
-    mainDefinitions: string[];
-    bpmnDiagram: BPMNDiagram | undefined;
-    processContent: string[] = []; // мысль: собрать отдельно процесс, затем диаграмму
-    diagramContent: string[] = []; // но входящие данные должны быть устроены так, чтобы в одном месте всегда
-                                    // были параметры как для секции процесса, так и диаграммы
+    mainProcessContent: string[] = [];
+    mainDiagramContent: string[] = [];
+    groupParameters : Map<string, Array<Point>> = new Map<string, Array<Point>>();
 
 
     constructor(props: BpmnPainterProps) {
-        this.testXML = testXML(); // Must be deleted on production
+        //this.testXML = testXML(); // Must be deleted on production
+        this.testXML = exportXml();
         console.log(props.containerId);
         this.bpmnViewer = new BpmnViewer({
             container: props.containerId
         });
-        this.mainProcessXML = '';
-        this.mainDefinitionsXML = '';
-        this.mainProcess = undefined;
-        this.bpmnDiagram = undefined;
-        this.mainDefinitions = [];
     }
 
-    establishConnection(connectionParameters: Connection) {
-            return connect(connectionParameters);
+    loadAndProcessDiagramContent (elementsList: Array<Element>) :void {
+        inputDataParser(elementsList, this.mainProcessContent, this.mainDiagramContent, this.groupParameters);
+        groupContainersOrchestrator(this.mainDiagramContent, this.groupParameters);
     }
 
-    specifyConnectionPath(connectionPath: ConnectionPath) {
-        return ConnectionRoad(connectionPath);
+    installStandAloneConnections (standAloneConnections: Array<StandAloneConnection>) :void {
+        standAloneConnectionsInstaller(standAloneConnections, this.mainProcessContent, this.mainDiagramContent);
+    }
+    resultXmlAssembler() :string {
+        return `
+            ${xmlHeader}
+                ${startXMLDefinitions}
+                    ${mainProcessStart}
+                        ${this.mainProcessContent.join('')}
+                    ${mainProcessEnd}
+                    ${mainDiagramStart}
+                        ${mainPlainStart}
+                            ${this.mainDiagramContent.join('')}
+                        ${mainPlainEnd}
+                    ${mainDiagramEnd}
+                ${endXMLDefinitions}
+        `
     }
 
-    drawRegularShape(shapeParameters: BPMNShape) {
-        return bpmnShape(shapeParameters);
-
-    }
-    // No idea how to implement this method
-    drawLabel() {
-
-    }
-
-    drawGroup(diagramElement: ElementID) {
-        return `<bpmn:group id="${diagramElement.id}"/>`
-    }
-
-    drawGroupShape(wrapperParameters: GroupWrapperShape) {
-        return GroupShape(wrapperParameters);
-    }
-    // to draw a conditional element shape, use drawRegularShape
-    drawConditionElement(diagramElement: ElementID) {
-        return ConditionElement(diagramElement);
-    }
-
-    // to draw an ordinary task shape, use drawRegularShape
-    drawOrdinaryTask(taskParams: OrdinaryTask) {
-        return Task(taskParams);
-    }
-
-    drawEndEvent(eventParams: EndEvent){
-        return endEvent(eventParams);
-    }
-
-    buildCompleteXML() {
-
-
-        // const definitions: Definitions = {
-        //     id: Math.random().toString(36).substring(2),
-        //     process: <BPMNProcess>this.mainProcess,
-        //     diagram: <BPMNDiagram>this.bpmnDiagram,
-        // }
-        // const completeDiagram = String.prototype.concat(
-        //     xmlHeader,
-        //     provideDefinitions(definitions),
-        //     endXMLDefinition
-        // );
-
-        // return completeDiagram;
-    }
-
+    // before execution call loadAndProcessDiagramContent with properly formatted input data
     execute(){
-        this.bpmnViewer.importXML(this.testXML);
+        // this.bpmnViewer.importXML(this.testXML);
+        this.bpmnViewer.importXML(this.resultXmlAssembler())
+
     }
 }

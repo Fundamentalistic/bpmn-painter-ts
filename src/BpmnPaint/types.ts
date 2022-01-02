@@ -1,119 +1,70 @@
-export type Bounds = {
+/**
+ * @interface Point
+ * @property x defines a diagram element position along horizontal direction (from left to right)
+ * @property y defines a diagram element position along vertical direction (from up to down)
+ */
+export interface Point {
     x: number,
     y: number,
+}
+
+/**
+ * @interface Shape
+ * @property type defines element shape type, specify 'BPMNShape' by default (until possible module extensions)
+ * @property id  a unique shape identifier
+ * @property position puts an element shape in a certain diagram place
+ * @property width sets an element shape width (along horizontal direction)
+ * @property height sets an element shape height (along vertical direction)
+ */
+interface Shape {
+    type: string,
+    id: string,
+    position: Point,
     width: number,
     height: number,
-};
-
-export type BPMNShape = {
-    id: string,
-    bpmnElement: string,
-    type: string,
-    bounds: Bounds,
-};
-
-export type BPMNPlane = {
-    id: string,
-    bpmnElement: string,
-    type: string,
-    bpmnElements: Array<BPMNShape | BPMNEdge>
 }
 
-export type Waypoint = {
-    x: number,
-    y: number
-}
-
-export type StartEvent = {
-    id: string,
-    type: string,
+/**
+ * @interface Connection
+ * @property connectWith  an element id to pave a connection to
+ * @property connectionMileStones  an array of connection start, end and intermediate points
+ */
+interface Connection {
     connectWith: string,
-};
-
-export type EndEvent = {
-    id: string,
-    type: string,
-    connectWith: string,
-};
-
-export type BPMNEdge = {
-    id: string,
-    bpmnElement: string,
-    type: string,
-    waypoints: Array<Waypoint>
-};
-
-export type DiagramDefinition = {
-    id: string | undefined,
-    elements: Array<BPMNShape | BPMNEdge>
-};
-
-export type BPMNDiagram = {
-    id: string,
-    plane: BPMNPlane
-};
-
-export type BPMNProcess = {
-    id: string,
-    executable: Boolean,
-    versionTag: string,
-    bpmnElements: Array<StartEvent | EndEvent | OrdinaryTask | Connection> // NO SHAPE IN PROCESS!!!
-
-}
-
-export type Definitions = {
-    id: string,
-    process: BPMNProcess,
-    diagram: BPMNDiagram,
-};
-
-
-/**
- * @type GroupWrapperShape
- * @property id a unique shape identifier
- * @property bpmnElement is a string that represents an id of an element to define its size and placement coordinates
- */
-export type GroupWrapperShape = {
-    id: string,
-    bpmnElement: string,
-    elements: Array<BPMNShape>
-}
-/**
- * @type ElementID
- * @property id a unique diagram element id
- * @property type defines which element type to draw
- */
-export type ElementID = {
-    id: string,
-    type: string,
+    connectionMileStones: Array<Point>,
 }
 
 /**
- * @type Connection
- * @property id a unique connection identifier, is used to define the connection path
- * @property sourceRef is an element id that is the connection origin
- * @property targetRef is  an element id that is the connection end
+ * @interface Element
+ * @property type  an element type (task, endEvent, startEvent, etc.)
+ * @property id  a unique element identifier
+ * @property name a diagram element caption or inner text
+ * @property shapeParameters describes a diagram element sizes and position
+ * @property connection tells whether a certain element has to be connected with another one or not
+ * @property belongsToGroup a group unique identifier to put a certain element in
+ * @property background_color defines element color, strictly recommended to use hex string values!
+ * dark green, for instance, '#123123', pure white '#ffffff'
  */
-export type Connection = {
+export interface Element {
     type: string,
     id: string,
-    sourceRef: string,
-    targetRef: string,
-}
-
-export type ConnectionPath = {
-    id: string,
-    bpmnElement: string,
-    wayPointsArray: Array<Waypoint>,
+    name?: string,
+    background_color?: string,
+    shapeParameters: Shape,
+    connection?: Connection,
+    belongsToGroup?: string,
 }
 
 /**
- * @type OrdinaryTask
- * @property id  a unique task identifier
- * @property name a string to display within ordinary task element
+ * @interface StandAloneConnection
+ * intended to be used to implement connections kind of
+ * group to  group, element to group, group to element, element to element
+ * @property from connection start element identifier
+ * @property to connection end element identifier
+ * @property connectionMileStones a certain connection path
  */
-export type OrdinaryTask = {
-    type: string,
-    id: string,
-    name: string,
+export interface StandAloneConnection {
+    from: string,
+    to: string,
+    connectionMileStones: Array<Point>,
 }
