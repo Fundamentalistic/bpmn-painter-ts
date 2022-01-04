@@ -42,6 +42,7 @@ export class BpmnPainter {
     mainProcessContent: string[] = [];
     mainDiagramContent: string[] = [];
     groupParameters : Map<string, Array<Point>> = new Map<string, Array<Point>>();
+    mainProcessStartTag: string = mainProcessStart;
 
 
     constructor(props: BpmnPainterProps) {
@@ -51,6 +52,20 @@ export class BpmnPainter {
         this.bpmnViewer = new BpmnViewer({
             container: props.containerId
         });
+    }
+
+    setUpProcessParameters(isExecutable?: boolean, versionTag?: string) :void {
+
+        if (isExecutable && versionTag) {
+            this.mainProcessStartTag = `<bpmn:process id="Process_Test_Strategy" isExecutable="${isExecutable}" camunda:versionTag="${versionTag}">`;
+        } else if(versionTag) {
+            this.mainProcessStartTag = `<bpmn:process id="Process_Test_Strategy" isExecutable="true" camunda:versionTag="${versionTag}">`;
+            return;
+        }else if (isExecutable) {
+            this.mainProcessStartTag = `<bpmn:process id="Process_Test_Strategy" isExecutable="${isExecutable}" camunda:versionTag="20211201-142">`;
+            return;
+        }
+
     }
 
     loadAndProcessDiagramContent (elementsList: Array<Element>) :void {
@@ -65,7 +80,7 @@ export class BpmnPainter {
         return `
             ${xmlHeader}
                 ${startXMLDefinitions}
-                    ${mainProcessStart}
+                    ${this.mainProcessStartTag}
                         ${this.mainProcessContent.join('')}
                     ${mainProcessEnd}
                     ${mainDiagramStart}
