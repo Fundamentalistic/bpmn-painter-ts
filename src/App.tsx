@@ -30,7 +30,7 @@ function App() {
         },
         connection: {
           connectWith: 'endEvent1',
-          connectionMileStones: [
+          connectionMileStonesCoordinates: [
             {
               x: 750,
               y: 1538 - commonVerticalShift,
@@ -90,6 +90,41 @@ function App() {
       },
       belongsToGroup: 'anotherTestGroup',
       background_color: '#123123',
+      border_color: "yellow",
+    },
+    {
+      type: 'callActivity',
+      id: 'callActivity1',
+      name: 'Test Call Activity',
+      shapeParameters: {
+        type: 'BPMNShape',
+        id: 'callActivity1Shape',
+        cell: {
+          i: 1,
+          j: 2,
+        },
+        width: 100,
+        height: 100,
+      },
+      background_color: "black",
+      border_color: "white",
+      connection: {
+        connectWith: 'testGroup',
+        connectionMileStonesCells: [
+          {
+            i: 1,
+            j: 2.4,
+          },
+          {
+            i: 3,
+            j: 2.4,
+          },
+          {
+            i: 5.4,
+            j: 2.4,
+          }
+        ]
+      }
     },
 
   ];
@@ -98,7 +133,7 @@ function App() {
     {
       from: 'testGroup',
       to: 'anotherTestGroup',
-      connectionMileStones: [
+      connectionMileStonesCoordinates: [
           {
             x: 850,
             y: 1902 - commonVerticalShift,

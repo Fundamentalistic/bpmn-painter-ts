@@ -8,6 +8,21 @@ export interface Point {
     y: number,
 }
 
+
+/**
+ * @interface Cell
+ * use this interface to set up a diagram element position roughly.
+ * i, j values are allowed to be a floating point numbers
+ * @property i is a cell horizontal index (from left to right the screen),
+ * its value is positive, integer and less than 25, but can be outside this range
+ * @property j is a cell vertical index (from up to down the screen),
+ * its values is positive, integer and less than 25, but can be outside this range
+ */
+export interface Cell {
+    i: number,
+    j: number,
+}
+
 /**
  * @interface Shape
  * @property type defines element shape type, specify 'BPMNShape' by default (until possible module extensions)
@@ -19,7 +34,8 @@ export interface Point {
 interface Shape {
     type: string,
     id: string,
-    position: Point,
+    position?: Point,
+    cell?: Cell,
     width: number,
     height: number,
 }
@@ -27,11 +43,17 @@ interface Shape {
 /**
  * @interface Connection
  * @property connectWith  an element id to pave a connection to
- * @property connectionMileStones  an array of connection start, end and intermediate points
+ * @property connectionMileStonesCoordinates  an array of connection start, end and intermediate points
+ * in (x, y) terms
+ * @property connectionMileStonesCells an array of connection start, end and intermediate points
+ * in (i, j) terms
+ * One must use one property, connectionMileStonesCoordinates or connectionMileStonesCells only,
+ * DO NOT leave both properties vacant and DO NOT declare them simultaneously!
  */
 interface Connection {
     connectWith: string,
-    connectionMileStones: Array<Point>,
+    connectionMileStonesCoordinates?: Array<Point>,
+    connectionMileStonesCells?: Array<Cell>,
 }
 
 /**
@@ -44,12 +66,14 @@ interface Connection {
  * @property belongsToGroup a group unique identifier to put a certain element in
  * @property background_color defines element color, strictly recommended to use hex string values!
  * dark green, for instance, '#123123', pure white '#ffffff'
+ * @property border_color defines an element border color and element text color
  */
 export interface Element {
     type: string,
     id: string,
     name?: string,
     background_color?: string,
+    border_color?:  string,
     shapeParameters: Shape,
     connection?: Connection,
     belongsToGroup?: string,
@@ -58,13 +82,19 @@ export interface Element {
 /**
  * @interface StandAloneConnection
  * intended to be used to implement connections kind of
- * group to  group, element to group, group to element, element to element
+ * group to  group, element to group, group to element, element to element, including extra connections
  * @property from connection start element identifier
  * @property to connection end element identifier
- * @property connectionMileStones a certain connection path
+ * @property connectionMileStonesCoordinates  an array of connection start, end and intermediate points
+ * in (x, y) terms
+ * @property connectionMileStonesCells an array of connection start, end and intermediate points
+ * in (i, j) terms
+ * One must use one property, connectionMileStonesCoordinates or connectionMileStonesCells only,
+ * DO NOT leave both properties vacant and DO NOT declare them simultaneously!
  */
 export interface StandAloneConnection {
     from: string,
     to: string,
-    connectionMileStones: Array<Point>,
+    connectionMileStonesCoordinates?: Array<Point>,
+    connectionMileStonesCells?: Array<Cell>,
 }

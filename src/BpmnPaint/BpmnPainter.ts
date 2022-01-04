@@ -37,7 +37,7 @@ export type BpmnPainterProps = {
 
 export class BpmnPainter {
 
-    testXML: string; // Just for development
+    // testXML: string; // Just for development
     bpmnViewer: BpmnViewer;
     mainProcessContent: string[] = [];
     mainDiagramContent: string[] = [];
@@ -45,8 +45,8 @@ export class BpmnPainter {
 
 
     constructor(props: BpmnPainterProps) {
-        //this.testXML = testXML(); // Must be deleted on production
-        this.testXML = exportXml();
+        // this.testXML = testXML(); // Must be deleted on production
+        // this.testXML = exportXml();
         console.log(props.containerId);
         this.bpmnViewer = new BpmnViewer({
             container: props.containerId

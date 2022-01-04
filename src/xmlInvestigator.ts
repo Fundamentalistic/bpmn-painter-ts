@@ -7,9 +7,13 @@ const xmlToInvestigate = `
         
             <bpmn:subProcess id="Task_Call_ID_3">
       
-                    <bpmn:endEvent id="EndEvent_Call_ID_Main_Process"/>
+                    <bpmn:endEvent id="EndEvent_Call_ID_Main_Process">
+                        <bpmn:outgoing>SequenceFlow_To_extra</bpmn:outgoing>
+                    </bpmn:endEvent>
                     <bpmn:sequenceFlow id="SequenceFlow_To_extra" sourceRef="EndEvent_Call_ID_Main_Process" targetRef="extra" />
-                    <bpmn:endEvent id="extra" name=""/>
+                    <bpmn:endEvent id="extra" name="">
+                        <bpmn:incoming>SequenceFlow_To_extra</bpmn:incoming>
+                    </bpmn:endEvent>
                     <bpmn:sequenceFlow id="SequenceFlow_To_End_Main_Process" sourceRef="Task_Call_ID_3" targetRef="EndEvent_Call_ID_Main_Process" />
                     <bpmn:group id="rootGroup0" />
       
@@ -40,8 +44,7 @@ const xmlToInvestigate = `
                </bpmndi:BPMNEdge>
                
                <bpmndi:BPMNEdge id="SequenceFlow_1u1v1r_extra" bpmnElement="SequenceFlow_To_extra">
-                    <di:waypoint x="750" y="1538" />
-                    <di:waypoint x="950" y="1702" />
+                    
                </bpmndi:BPMNEdge>
                
                <bpmndi:BPMNShape id="rootGroup0_di" bpmnElement="rootGroup0">

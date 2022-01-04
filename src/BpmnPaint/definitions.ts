@@ -1,5 +1,6 @@
 
 import {
+    Cell,
     Element,
     Point,
     StandAloneConnection,
@@ -17,21 +18,36 @@ export const mainPlainEnd = `</bpmndi:BPMNPlane>`;
 const xOffset = 100;
 const yOffset = 100;
 
+const CellPointConvertor = (cell :Cell) :Point => {
+    const stepX = 1400 / 12;
+    const stepY = 120;
+    return {
+        x: cell.i * stepX,
+        y: cell.j * stepY,
+    }
+}
+
 export function inputDataParser(
     data: Array<Element>,
     processContent: Array<string>,
     diagramContent: Array<string>,
     groups: Map<string, Array<Point>>,
 ) :void {
+
+    let positionObject :Point;
     data.forEach((element) => {
+
+        positionObject = element.shapeParameters?.cell
+            ? CellPointConvertor(element.shapeParameters.cell)
+            : element.shapeParameters.position!;
 
         processContent.push(
             `<bpmn:${element.type} id="${element.id}" name="${element?.name ? element.name: ""}"/>`
         );
 
         diagramContent.push(
-            `<bpmndi:${element.shapeParameters.type} id="${element.shapeParameters.id}" bpmnElement="${element.id}" color:background-color="${element?.background_color ? element.background_color : 'white'}"  color:border-color="${element?.background_color ? 'white' : 'black'}">
-                <dc:Bounds x="${element.shapeParameters.position.x}" y="${element.shapeParameters.position.y}" width="${element.shapeParameters.width}" height="${element.shapeParameters.height}" />
+            `<bpmndi:${element.shapeParameters.type} id="${element.shapeParameters.id}" bpmnElement="${element.id}" color:background-color="${element?.background_color ? element.background_color : 'white'}"  color:border-color="${element?.border_color ? element.border_color : 'black'}">
+                <dc:Bounds x="${positionObject.x}" y="${positionObject.y}" width="${element.shapeParameters.width}" height="${element.shapeParameters.height}" />
             </bpmndi:${element.shapeParameters.type}>`
         );
 
@@ -41,9 +57,15 @@ export function inputDataParser(
             );
             diagramContent.push(
               `<bpmndi:BPMNEdge id="from${element.id}to${element.connection.connectWith}_di" bpmnElement="from${element.id}to${element.connection.connectWith}">
-                    ${element.connection.connectionMileStones.map((point) => {
-                            return `<di:waypoint x="${point.x}" y="${point.y}" />`
-                        }).join('')
+                    ${
+                        element.connection.connectionMileStonesCoordinates
+                            ? element.connection.connectionMileStonesCoordinates.map((point) => {
+                                return `<di:waypoint x="${point.x}" y="${point.y}" />`
+                            }).join('') 
+                            :  element.connection.connectionMileStonesCells!.map((cell) => {
+                                const tempObj = CellPointConvertor(cell);
+                                return `<di:waypoint x="${tempObj.x}" y="${tempObj.y}" />`
+                            })
                     }
                </bpmndi:BPMNEdge>
               `
@@ -58,7 +80,9 @@ export function inputDataParser(
                 processContent.push(
                     `<bpmn:group id="${element.belongsToGroup}" />`
                 );                                 // minimal X and Y                 maximal X and Y are initialized here
-                groups.set(element.belongsToGroup, [element.shapeParameters.position, element.shapeParameters.position]);
+                groups.set(
+                    element.belongsToGroup,
+                    [positionObject, positionObject]);
             } else {
 
                 const [currentMinCoordinates, currentMaxCoordinates]: Point[] = groups.get(element.belongsToGroup)!;
@@ -66,12 +90,12 @@ export function inputDataParser(
                     element.belongsToGroup,
                     [
                         {
-                            x: Math.min(currentMinCoordinates.x, element.shapeParameters.position.x),
-                            y: Math.min(currentMinCoordinates.y, element.shapeParameters.position.y),
+                            x: Math.min(currentMinCoordinates.x, positionObject.x),
+                            y: Math.min(currentMinCoordinates.y, positionObject.y),
                         },
                         {
-                            x: Math.max(currentMaxCoordinates.x, element.shapeParameters.position.x),
-                            y: Math.max(currentMaxCoordinates.y, element.shapeParameters.position.y),
+                            x: Math.max(currentMaxCoordinates.x, positionObject.x),
+                            y: Math.max(currentMaxCoordinates.y, positionObject.y),
                         }
                     ]
                 );
@@ -118,9 +142,16 @@ export function standAloneConnectionsInstaller(
         );
         diagramContent.push(
             `<bpmndi:BPMNEdge id="from${connection.from}to${connection.to}_diStandAlone" bpmnElement="from${connection.from}to${connection.to}StandAlone">
-                    ${connection.connectionMileStones.map((point) => {
-                return `<di:waypoint x="${point.x}" y="${point.y}" />`
-            }).join('')}
+                    ${
+                        connection.connectionMileStonesCoordinates 
+                            ? connection.connectionMileStonesCoordinates.map((point) => {
+                                    return `<di:waypoint x="${point.x}" y="${point.y}" />`
+                            }).join('') 
+                            : connection.connectionMileStonesCells!.map((cell) => {
+                                    const tempObj = CellPointConvertor(cell);
+                                return `<di:waypoint x="${tempObj.x}" y="${tempObj.y}" />`
+                            })
+                    }
                </bpmndi:BPMNEdge>
               `
         );
