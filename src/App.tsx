@@ -1,15 +1,21 @@
 import React, {useEffect} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {
-  BpmnPainter,
-  BpmnPainterProps
-} from './BpmnPaint/BpmnPainter';
+// import {
+//   BpmnPainter,
+//   BpmnPainterProps
+// } from './BpmnPaint/BpmnPainter';
+//
+// import {
+//   Element,
+//   StandAloneConnection,
+// } from './BpmnPaint/types';
 
+import BpmnPainter from "bpmn-js-ts-light-version/lib/BpmnPainter";
 import {
   Element,
-  StandAloneConnection,
-} from './BpmnPaint/types';
+  StandAloneConnection
+} from "bpmn-js-ts-light-version/lib/Interfaces/Interfaces";
 
 function App() {
 
@@ -146,10 +152,10 @@ function App() {
     }
   ]
 
-  const props : BpmnPainterProps = {
+  const props = {
     containerId: '#bpmnCanvas',
-    modules: undefined,
-    bpmnViewer: undefined,
+    // modules: undefined,
+    // bpmnViewer: undefined,
   }
   useEffect(() => {
     const bp = new BpmnPainter(props);
